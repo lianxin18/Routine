@@ -1,0 +1,87 @@
+﻿ASP.NET Web API Swagger 学习笔记
+
+1. 添加 NuGet 包引用
+
+通过 NuGet 包管理器控制台或 GUI，为项目安装包：Swashbuckle.AspNetCore
+
+2. 配置服务与中间件 
+在 Program.cs文件中进行配置：(查看代码)
+// 添加 Swagger 服务
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options => {
+    string basePath = AppContext.BaseDirectory;
+    string xmlPath = Path.Combine(basePath, "Routine.API.xml"); 
+    options.IncludeXmlComments(xmlPath);
+});
+
+// 配置 HTTP 请求管道
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+3. 显示 XML 注释
+
+让 Swagger UI 显示 API 的 XML 注释，使文档更完善：
+
+修改项目文件 (.csproj)，确保包含：
+
+<!-- 关键：启用 XML 文档文件生成 -->
+<GenerateDocumentationFile>true</GenerateDocumentationFile>
+<!-- 忽略缺失 XML 注释的警告 -->
+<NoWarn>$(NoWarn);1591</NoWarn>
+
+4. 多版本控制
+在 Program.cs文件中进行配置：(查看代码)
+#region 多版本控制
+    var versions = new[] { ApiVersionInfo.V1, ApiVersionInfo.V2 };
+
+    foreach (var version in versions)
+    {
+        options.SwaggerDoc(version, new OpenApiInfo()
+        {
+            Title = $"{version}：这里是Core Webapi9",
+            Version = version,
+            Description = $"Core Webapi 9 {version} 版本"
+            
+        });
+    }
+#endregion
+// 配置 HTTP 请求管道
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(options => {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Routine.API v1");
+        options.SwaggerEndpoint("/swagger/v2/swagger.json", "Routine.API v2");
+    });
+}
+//配置 launchSettings.json
+{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "http": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:7156;http://localhost:5240",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+
+}
+//新增 ApiVersionInfo.cs 文件
+
+//修改 WeatherForecastV1Controller 增加 WeatherForecastV2Controller
+
+[ApiExplorerSettings(GroupName = ApiVersionInfo.V1)]
+
+[ApiExplorerSettings(GroupName = ApiVersionInfo.V2)]
+
+[HttpGet(Name = "GetWeatherForecastV1")]
+
+[HttpGet(Name = "GetWeatherForecastV2")]

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+	<!-- 关键：启用 XML 文档文件生成 -->
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	<!-- 忽略缺失 XML 注释的警告 -->
+	<NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
+  </ItemGroup>
+
+</Project>
